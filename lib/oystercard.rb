@@ -14,6 +14,10 @@ class Oystercard
      @balance += topup_value
   end
 
+  def deduct(spent_fare)
+    @balance -= spent_fare
+  end
+
   private
 
   def exceeded?(topup_value)
