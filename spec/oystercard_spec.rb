@@ -9,9 +9,11 @@ describe Oystercard do
   let(:max_limit) { Oystercard::LIMIT }
   subject(:oystercard) { described_class.new }
 
-  it { is_expected.to respond_to(:balance) }
-  it { is_expected.to respond_to(:top_up) }
-  it { is_expected.to respond_to(:deduct) }
+  # it { is_expected.to respond_to(:balance) }
+  # it { is_expected.to respond_to(:top_up) }
+  # it { is_expected.to respond_to(:deduct) }
+  # it { is_expected.to respond_to(:touch_in) }
+  # it { is_expected.to respond_to(:touch_out) }
 
   it "has a default balance of 0" do
     expect(oystercard.balance).to eq default_balance
@@ -28,6 +30,25 @@ describe Oystercard do
   it "deducts the fare for jorney" do
     oystercard.top_up(topup_value)
     expect { oystercard.deduct(spent_fare) }.to change { oystercard.balance }.by -spent_fare
+  end
+
+  it 'is initially not in a journey' do
+    expect(oystercard).not_to be_in_journey
+  end
+
+  context "require the card to be topped up" do
+    before :each { oystercard.top_up(max_limit) }
+
+    it "tracks that the card is in use, touched in" do
+      oystercard.touch_in
+      expect(oystercard).to be_in_journey
+    end
+
+    it "tracks that the card is not longer in use, touched out" do
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard).not_to be_in_journey
+    end
   end
 
 end
