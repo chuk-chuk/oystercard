@@ -1,4 +1,4 @@
-require 'oystercard'
+require './lib/oystercard'
 
 describe Oystercard do
 
@@ -6,17 +6,15 @@ describe Oystercard do
   let(:default_balance) { 0 }
   let(:topup_value) { 50 }
   let(:spent_fare) { 5 }
-  let(:max_limit) { Oystercard::LIMIT }
+  let(:max_limit) { described_class::LIMIT }
   subject(:oystercard) { described_class.new }
-
-  # it { is_expected.to respond_to(:balance) }
-  # it { is_expected.to respond_to(:top_up) }
-  # it { is_expected.to respond_to(:deduct) }
-  # it { is_expected.to respond_to(:touch_in) }
-  # it { is_expected.to respond_to(:touch_out) }
 
   it "has a default balance of 0" do
     expect(oystercard.balance).to eq default_balance
+  end
+
+  it "raises error if touched in without minimum balance on card" do
+    expect { oystercard.touch_in }.to raise_error "Touch in failed, balance lower than minimum"
   end
 
   it "allows a card to be topped up" do
