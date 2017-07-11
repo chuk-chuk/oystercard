@@ -8,6 +8,8 @@ describe Oystercard do
   let(:min_fare) { described_class::MIN_FARE }
   let(:max_limit) { described_class::LIMIT }
   let(:station1) { double :station1 }
+  let(:exit_station) { double :exit_station}
+  let(:journey) { {entry_st: station1, exit_st: exit_station} }
   subject(:oystercard) { described_class.new }
 
   context "initial state of the card" do
@@ -18,6 +20,11 @@ describe Oystercard do
     it 'is initially not in a journey' do
       expect(oystercard).not_to be_in_journey
     end
+
+    it "stores all journeys" do
+      expect(oystercard.history).to be_empty
+    end
+
   end
 
   it "raises error if touched in without minimum balance on card" do
@@ -47,18 +54,22 @@ describe Oystercard do
 
     context "touch out" do
       it "deducts the fare for jorney" do
-        expect { oystercard.touch_out }.to change { oystercard.balance }.by -min_fare
-      end
-
-      it "checks if charge was made" do
-        expect { oystercard.touch_out }.to change { oystercard.balance }.by -min_fare
+        expect { oystercard.touch_out(exit_station) }.to change { oystercard.balance }.by -min_fare
       end
     end
 
-    it "tracks that the card is not longer in use, touched out" do
-      oystercard.touch_in(station1)
-      oystercard.touch_out
-      expect(oystercard).not_to be_in_journey
+    context "complete journey" do
+      before :each do
+        oystercard.touch_in(station1)
+        oystercard.touch_out(exit_station)
+      end
+      it "checks if journey was added" do
+        expect(oystercard.history).to include journey
+      end
+
+      it "tracks that the card is not longer in use, touched out" do
+        expect(oystercard).not_to be_in_journey
+      end
     end
   end
 
