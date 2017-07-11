@@ -9,7 +9,7 @@ describe Oystercard do
   let(:max_limit) { described_class::LIMIT }
   let(:station1) { double :station1 }
   let(:exit_station) { double :exit_station}
-  let(:journey) { {entry_st: station1, exit_st: exit_station} }
+  let(:journey) { {entry_station: station1, exit_station: exit_station} }
   subject(:oystercard) { described_class.new }
 
   context "initial state of the card" do
@@ -17,7 +17,7 @@ describe Oystercard do
       expect(oystercard.balance).to eq default_balance
     end
     it 'is initially not in a journey' do
-      expect(oystercard).not_to be_in_journey
+      expect(oystercard.in_journey?).not_to eq true
     end
     it "journeys history is empty" do
       expect(oystercard.history).to be_empty
@@ -42,7 +42,7 @@ describe Oystercard do
     context "#touch_in" do
       before :each { oystercard.touch_in(station1) }
       it "stores the entry_station" do
-        expect(oystercard.journey[:entry_st]).to eq station1
+        expect(oystercard.journey.entry_station).to eq station1
       end
       it "tracks that the card is in use, touched in" do
         expect(oystercard).to be_in_journey
@@ -61,11 +61,11 @@ describe Oystercard do
         oystercard.touch_out(exit_station)
       end
       it "checks if journey was added" do
-        expect(oystercard.history).to include journey
+        expect(oystercard.history[0].entry_station).to eq entry_station
       end
 
       it "tracks that the card is not longer in use, touched out" do
-        expect(oystercard).not_to be_in_journey
+        expect(oystercard.in_journey?).not_to eq true
       end
     end
   end
