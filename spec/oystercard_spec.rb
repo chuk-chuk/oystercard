@@ -7,6 +7,7 @@ describe Oystercard do
   let(:topup_value) { 50 }
   let(:min_fare) { described_class::MIN_FARE }
   let(:max_limit) { described_class::LIMIT }
+  let(:penalty_fare) { described_class::PENALTY_FARE } 
   let(:station1) { double :station1 }
   let(:exit_station) { double :exit_station}
   let(:journey) { {entry_station: station1, exit_station: exit_station} }
@@ -50,8 +51,8 @@ describe Oystercard do
     end
 
     context "touch out" do
-      it "deducts the fare for jorney" do
-        expect { oystercard.touch_out(exit_station) }.to change { oystercard.balance }.by -min_fare
+      it "deducts the penalty fare for jorney" do
+        expect { oystercard.touch_out(exit_station) }.to change { oystercard.balance }.by -penalty_fare
       end
     end
 
@@ -61,11 +62,10 @@ describe Oystercard do
         oystercard.touch_out(exit_station)
       end
       it "checks if journey was added" do
-        expect(oystercard.history[0].entry_station).to eq entry_station
+        expect(oystercard.history.count).to eq 1
       end
-
-      it "tracks that the card is not longer in use, touched out" do
-        expect(oystercard.in_journey?).not_to eq true
+      it "deducts the min fare for jorney" do
+        expect(oystercard.balance).to eq(max_limit - min_fare)
       end
     end
   end

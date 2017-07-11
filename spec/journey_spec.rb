@@ -8,16 +8,24 @@ describe Journey do
   let(:penalty_fare) { described_class::PENALTY_FARE }
 
   context 'touch in and out' do
-    it 'should return minimum fare' do
+    before do
       journey.start(entry_station)
       journey.finish(exit_station)
+    end
+    it 'should return minimum fare' do
       expect(journey.fare).to eq min_fare
+    end
+    it 'complete? should be true' do
+      expect(journey.complete?).to eq true
     end
   end
 
   context 'touch in but not out' do
+    before { journey.start(entry_station) }
+    it 'should be false during journey' do
+      expect(journey.complete?).to eq false
+    end
     it 'should return minimum fare' do
-      journey.start(entry_station)
       expect(journey.fare).to eq penalty_fare
     end
   end
