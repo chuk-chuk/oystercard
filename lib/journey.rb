@@ -13,15 +13,21 @@ class Journey
 
   def start(station)
     @entry_station = station
+    fare
   end
 
   def finish(station)
     @exit_station = station
     @complete = true if !!@entry_station
+    fare
   end
 
   def fare
-    @fare = complete? ? MIN_FARE : PENALTY_FARE
+    @fare = if complete?
+      MIN_FARE + (entry_station.zone - exit_station.zone).abs
+    else
+      PENALTY_FARE
+    end
   end
 
   def in_journey?

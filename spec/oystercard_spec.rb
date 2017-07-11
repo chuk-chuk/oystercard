@@ -5,9 +5,9 @@ describe Oystercard do
   let(:bad_topup) { 120 }
   let(:default_balance) { 0 }
   let(:topup_value) { 50 }
-  let(:min_fare) { described_class::MIN_FARE }
+  let(:min_fare) { described_class::MIN_BALANCE }
   let(:max_limit) { described_class::LIMIT }
-  let(:penalty_fare) { described_class::PENALTY_FARE } 
+  let(:penalty_fare) { described_class::PENALTY_FARE }
   let(:station1) { double :station1 }
   let(:exit_station) { double :exit_station}
   let(:journey) { {entry_station: station1, exit_station: exit_station} }
