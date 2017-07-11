@@ -7,6 +7,7 @@ describe Oystercard do
   let(:topup_value) { 50 }
   let(:min_fare) { described_class::MIN_FARE }
   let(:max_limit) { described_class::LIMIT }
+  let(:station1) { double :station1 }
   subject(:oystercard) { described_class.new }
 
   context "initial state of the card" do
@@ -20,7 +21,7 @@ describe Oystercard do
   end
 
   it "raises error if touched in without minimum balance on card" do
-    expect { oystercard.touch_in }.to raise_error "Touch in failed, balance lower than minimum"
+    expect { oystercard.touch_in(station1) }.to raise_error "Touch in failed, balance lower than minimum"
   end
 
   it "allows a card to be topped up" do
@@ -34,6 +35,16 @@ describe Oystercard do
   context "require the card to be topped up" do
     before :each { oystercard.top_up(max_limit) }
 
+    context "#touch_in" do
+      before :each { oystercard.touch_in(station1) }
+      it "stores the entry_station" do
+        expect(oystercard.entry_station).to eq station1
+      end
+      it "tracks that the card is in use, touched in" do
+        expect(oystercard).to be_in_journey
+      end
+    end
+
     context "touch out" do
       it "deducts the fare for jorney" do
         expect { oystercard.touch_out }.to change { oystercard.balance }.by -min_fare
@@ -44,13 +55,8 @@ describe Oystercard do
       end
     end
 
-    it "tracks that the card is in use, touched in" do
-      oystercard.touch_in
-      expect(oystercard).to be_in_journey
-    end
-
     it "tracks that the card is not longer in use, touched out" do
-      oystercard.touch_in
+      oystercard.touch_in(station1)
       oystercard.touch_out
       expect(oystercard).not_to be_in_journey
     end
