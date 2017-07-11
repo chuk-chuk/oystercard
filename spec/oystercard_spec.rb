@@ -16,15 +16,12 @@ describe Oystercard do
     it "has a default balance of 0" do
       expect(oystercard.balance).to eq default_balance
     end
-
     it 'is initially not in a journey' do
       expect(oystercard).not_to be_in_journey
     end
-
-    it "stores all journeys" do
+    it "journeys history is empty" do
       expect(oystercard.history).to be_empty
     end
-
   end
 
   it "raises error if touched in without minimum balance on card" do
@@ -45,7 +42,7 @@ describe Oystercard do
     context "#touch_in" do
       before :each { oystercard.touch_in(station1) }
       it "stores the entry_station" do
-        expect(oystercard.entry_station).to eq station1
+        expect(oystercard.journey[:entry_st]).to eq station1
       end
       it "tracks that the card is in use, touched in" do
         expect(oystercard).to be_in_journey
